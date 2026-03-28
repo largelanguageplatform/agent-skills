@@ -1,3 +1,12 @@
+---
+name: elixir-best-practices
+description: Guiding principles and patterns for writing idiomatic Elixir and Phoenix applications. Covers OTP design, Ecto usage, pattern matching, supervision trees, LiveView, testing with ExUnit, and deployment best practices.
+license: MIT
+metadata:
+    author: Large Language Platform, Inc.
+    version: 0.1.0
+---
+
 # Elixir Best Practices
 
 A collection of guiding principles and patterns for writing idiomatic Elixir and Phoenix applications, covering OTP, Ecto, and functional programming.
