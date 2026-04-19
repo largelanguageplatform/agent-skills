@@ -1,6 +1,6 @@
 ---
 name: lean-developer
-description: Guiding principles and patterns for writing lean software. Covers architecture decisions, dependency management, abstraction timing, code clarity, and product scope — focused on building the smallest thing that solves the real problem well.
+description: Guiding principles and patterns for writing lean software. Covers architecture decisions, dependency management, abstraction timing, code clarity, and product scope - focused on building the smallest thing that solves the real problem well.
 license: MIT
 metadata:
     author: Large Language Platform, Inc.
@@ -9,7 +9,7 @@ metadata:
 
 # Lean Developer
 
-A collection of guiding principles and patterns for writing software that is simple, clear, and focused on real problems — not imagined future ones.
+A collection of guiding principles and patterns for writing software that is simple, clear, and focused on real problems - not imagined future ones.
 
 These guidelines aim to help developers:
 
@@ -23,20 +23,20 @@ These guidelines aim to help developers:
 
 When this skill is active, apply the following process before suggesting any solution:
 
-1. **Identify the core task** — understand what the user is actually trying to achieve, not just what they asked for literally.
-2. **Map the current solution end to end** — trace the full path: data in, logic applied, data out. Understand what already exists before proposing anything new.
-3. **Look for unnecessary weight** — scan for redundant dependencies, speculative abstractions, unused configuration, duplicated layers, and moving parts that do not justify their presence.
-4. **Prefer subtraction over addition** — present recommendations in this order: remove first, then simplify, then defer, then add. Addition is always the last resort.
-5. **Protect the non-negotiables** — flag where simplicity would become underbuilding. The following must never be sacrificed for brevity: authentication and authorisation, data integrity and consistency, failure handling and recovery, security boundaries, observability, and backup/restore paths.
-6. **Be honest about trade-offs** — when a simpler approach has a real cost, name it. Do not oversell minimalism where robustness genuinely requires more.
+1. **Identify the core task** - understand what the user is actually trying to achieve, not just what they asked for literally.
+2. **Map the current solution end to end** - trace the full path: data in, logic applied, data out. Understand what already exists before proposing anything new.
+3. **Look for unnecessary weight** - scan for redundant dependencies, speculative abstractions, unused configuration, duplicated layers, and moving parts that do not justify their presence.
+4. **Prefer subtraction over addition** - present recommendations in this order: remove first, then simplify, then defer, then add. Addition is always the last resort.
+5. **Protect the non-negotiables** - flag where simplicity would become underbuilding. The following must never be sacrificed for brevity: authentication and authorisation, data integrity and consistency, failure handling and recovery, security boundaries, observability, and backup/restore paths.
+6. **Be honest about trade-offs** - when a simpler approach has a real cost, name it. Do not oversell minimalism where robustness genuinely requires more.
 
 ## The Three-Stage Mandate
 
 Every piece of software should pass through three stages, in order:
 
-1. **Make it work** — correctness first. Ship something that solves the real problem reliably. An elegant solution to the wrong problem, or one that crashes under real conditions, has no value.
-2. **Make it clear** — once it works, make it obvious. Clean up the code so the next engineer (or future you) can read, understand, and safely change it. Clarity is not cosmetic; unclear code becomes unmaintainable code.
-3. **Make it fast** — only after it is correct and clear, optimize for performance. And only where measurement shows it is actually needed. Premature optimization is complexity purchased before the invoice arrives.
+1. **Make it work** - correctness first. Ship something that solves the real problem reliably. An elegant solution to the wrong problem, or one that crashes under real conditions, has no value.
+2. **Make it clear** - once it works, make it obvious. Clean up the code so the next engineer (or future you) can read, understand, and safely change it. Clarity is not cosmetic; unclear code becomes unmaintainable code.
+3. **Make it fast** - only after it is correct and clear, optimize for performance. And only where measurement shows it is actually needed. Premature optimization is complexity purchased before the invoice arrives.
 
 The most common mistake is skipping to step 3 before finishing step 1, or spending all time on step 2 before step 1 is real.
 
@@ -44,7 +44,7 @@ The most common mistake is skipping to step 3 before finishing step 1, or spendi
 
 Every line of code is a line that can contain a bug, must be read, must be tested, and must be maintained. The best code is the code you did not have to write.
 
-> Write the least amount of code that correctly delivers the required features at the required quality and safety. No less — but never more.
+> Write the least amount of code that correctly delivers the required features at the required quality and safety. No less - but never more.
 
 This means:
 
@@ -57,7 +57,7 @@ More code does not mean more value. It means more surface area for failure.
 
 ## Fewer Moving Parts
 
-Every additional component — service, dependency, queue, database, abstraction layer — multiplies the surface area for bugs, coupling, and maintenance.
+Every additional component - service, dependency, queue, database, abstraction layer - multiplies the surface area for bugs, coupling, and maintenance.
 
 **Over-engineered:**
 
@@ -71,7 +71,7 @@ User Request
             → Email Worker
 ```
 
-**Minimalist:**
+**Lean:**
 
 ```
 User Request
@@ -90,31 +90,11 @@ Start with the monolith. Extract only when a specific bottleneck is demonstrated
 
 Premature abstraction is as harmful as premature optimization. Duplicate code is cheaper than the wrong abstraction.
 
-**Too early (no second use case yet):**
-
-```go
-type Notifier interface {
-    Send(to, subject, body string) error
-}
-
-type EmailNotifier struct{ client *smtp.Client }
-
-func (n *EmailNotifier) Send(to, subject, body string) error { ... }
-```
-
-**Minimalist (until there are two real use cases):**
-
-```go
-func sendWelcomeEmail(to, name string) error {
-    return smtp.SendMail(addr, auth, from, []string{to}, buildMessage(name))
-}
-```
-
-Extract the abstraction when the second concrete case arrives and the shared shape becomes obvious — not before.
+Build the concrete thing once. If a second real use case arrives and the shared shape is obvious, extract the abstraction then - not before. See the Go and TypeScript examples in the Language Examples section for concrete before/after illustrations.
 
 ## Optimize for Clarity
 
-Minimalist code answers these questions immediately:
+Lean code answers these questions immediately:
 
 - What does this do?
 - Where does this logic live?
@@ -172,7 +152,7 @@ notifier:
   max_retries: 3
 ```
 
-**Minimalist:**
+**Lean:**
 
 ```yaml
 notifier:
@@ -226,7 +206,7 @@ Build the core loop end-to-end first. Everything else is a distraction until the
 
 ### Go
 
-**Delay abstraction — one real use case does not need an interface:**
+**Delay abstraction - one real use case does not need an interface:**
 
 ```go
 // Too early: interface with a single implementation
@@ -244,7 +224,7 @@ func NotifyUser(n Notifier, user User) error {
 ```
 
 ```go
-// Minimalist: just the function you need today
+// Lean: just the function you need today
 func sendWelcomeEmail(to, name string) error {
     return smtp.SendMail(addr, auth, from, []string{to}, buildMessage(name))
 }
@@ -289,7 +269,7 @@ func GetUser(id string) (*User, error) {
 ```
 
 ```go
-// Minimalist: sentinel errors or fmt.Errorf are almost always enough
+// Lean: sentinel errors or fmt.Errorf are almost always enough
 var ErrNotFound = errors.New("not found")
 
 func GetUser(id string) (*User, error) {
@@ -303,7 +283,7 @@ func GetUser(id string) (*User, error) {
 
 ---
 
-**Write less code — use what the language gives you:**
+**Write less code - use what the language gives you:**
 
 ```go
 // Hand-rolled sort: more code, more bugs
@@ -323,7 +303,7 @@ sort.Slice(users, func(i, j int) bool { return users[i].Age < users[j].Age })
 
 ### TypeScript
 
-**Delay abstraction — a plain function before a class hierarchy:**
+**Delay abstraction - a plain function before a class hierarchy:**
 
 ```typescript
 // Too early: base class, factory, and strategy for one email type
@@ -341,7 +321,7 @@ class NotificationFactory {
 ```
 
 ```typescript
-// Minimalist: just the function
+// Lean: just the function
 async function sendEmail(to: string, subject: string, body: string): Promise<void> {
     await mailer.send({ to, subject, body })
 }
@@ -395,7 +375,7 @@ function mergeConfig<T extends BaseConfig>(base: T, override: DeepPartial<T>): T
 ```
 
 ```typescript
-// Minimalist: precise types for what actually varies
+// Lean: precise types for what actually varies
 interface Config { timeout: number; retries: number }
 
 function mergeConfig(base: Config, override: Partial<Config>): Config {
@@ -403,15 +383,126 @@ function mergeConfig(base: Config, override: Partial<Config>): Config {
 }
 ```
 
-Use generics and advanced types when they remove real duplication or enforce a real invariant — not to demonstrate sophistication.
+Use generics and advanced types when they remove real duplication or enforce a real invariant - not to demonstrate sophistication.
 
 ## Iron Laws
 
-1. **NEVER** introduce a new service, queue, or database without first demonstrating that a single component cannot handle the load — complexity added for imaginary future scale always compounds into real present cost.
-2. **ALWAYS** write the simplest direct implementation first; only abstract when a second real use case exists and the shared shape is obvious — the wrong abstraction is worse than duplication.
-3. **Prefer inlining over adding a dependency** when the required functionality is small, well-understood, and carries no meaningful risk — but favour a well-maintained library when the problem is genuinely hard (cryptography, parsing, protocol handling) or when the implementation would need its own tests and maintenance.
-4. **Aim for a solution a new engineer can follow without needing to jump across many files or layers** — if tracing the core user action requires significant archaeology, treat that as a signal to simplify, not a rule violation to fix by count.
-5. **NEVER** add configuration options, modes, or feature flags speculatively — expose a knob only when a real user has a real need to vary the behavior.
+1. **NEVER** introduce a new service, queue, or database without first demonstrating that a single component cannot handle the load - complexity added for imaginary future scale always compounds into real present cost.
+2. **ALWAYS** write the simplest direct implementation first; only abstract when a second real use case exists and the shared shape is obvious - the wrong abstraction is worse than duplication.
+3. **Prefer inlining over adding a dependency** when the required functionality is small, well-understood, and carries no meaningful risk - but favour a well-maintained library when the problem is genuinely hard (cryptography, parsing, protocol handling) or when the implementation would need its own tests and maintenance.
+4. **Aim for a solution a new engineer can follow without needing to jump across many files or layers** - if tracing the core user action requires significant archaeology, treat that as a signal to simplify, not a rule violation to fix by count.
+5. **NEVER** add configuration options, modes, or feature flags speculatively - expose a knob only when a real user has a real need to vary the behavior.
+
+### Elixir
+
+**Delay abstraction - one storage backend does not need a behaviour:**
+
+```elixir
+# Too early: behaviour built for a swap that may never happen
+defmodule ObjectStore do
+  @callback upload(key :: String.t(), body :: binary()) :: :ok | {:error, term()}
+  @callback download(key :: String.t()) :: {:ok, binary()} | {:error, term()}
+  @callback delete(key :: String.t()) :: :ok | {:error, term()}
+end
+
+defmodule S3Store do
+  @behaviour ObjectStore
+  def upload(key, body), do: ExAws.S3.put_object(bucket(), key, body) |> ExAws.request()
+  def download(key), do: ExAws.S3.get_object(bucket(), key) |> ExAws.request()
+  def delete(key), do: ExAws.S3.delete_object(bucket(), key) |> ExAws.request()
+end
+```
+
+```elixir
+# Lean: just call S3 directly until a second backend is a real requirement
+defmodule Storage do
+  def upload(key, body), do: ExAws.S3.put_object(bucket(), key, body) |> ExAws.request()
+  def download(key), do: ExAws.S3.get_object(bucket(), key) |> ExAws.request()
+  def delete(key), do: ExAws.S3.delete_object(bucket(), key) |> ExAws.request()
+end
+```
+
+Introduce the behaviour when local disk or GCS is a real requirement - not as insurance against a hypothetical swap.
+
+---
+
+**Use the standard library before reaching for a package:**
+
+```elixir
+# Unnecessary: pulling in a CSV parsing library for a simple two-column file
+defp parse(path) do
+  path |> File.read!() |> CSV.decode!(headers: true) |> Enum.to_list()
+end
+```
+
+```elixir
+# Lean: stdlib is sufficient for simple cases
+defp parse(path) do
+  path
+  |> File.stream!()
+  |> Stream.map(&String.trim/1)
+  |> Stream.map(&String.split(&1, ","))
+  |> Enum.to_list()
+end
+```
+
+---
+
+**Pattern matching over defensive conditionals:**
+
+```elixir
+# Over-engineered: manual type and nil checks
+def process_response(response) do
+  if response != nil do
+    if Map.has_key?(response, :status) do
+      if response.status == :ok do
+        handle_success(response.data)
+      else
+        handle_error(response.reason)
+      end
+    end
+  end
+end
+```
+
+```elixir
+# Lean: let pattern matching do the work
+def process_response(%{status: :ok, data: data}), do: handle_success(data)
+def process_response(%{status: :error, reason: reason}), do: handle_error(reason)
+```
+
+---
+
+**Write less code - use `with` to flatten nested error handling:**
+
+```elixir
+# Nested case: grows with every step
+def create_order(params) do
+  case validate(params) do
+    {:ok, validated} ->
+      case fetch_user(validated.user_id) do
+        {:ok, user} ->
+          case charge(user, validated.amount) do
+            {:ok, charge} -> {:ok, charge}
+            {:error, reason} -> {:error, reason}
+          end
+        {:error, reason} -> {:error, reason}
+      end
+    {:error, reason} -> {:error, reason}
+  end
+end
+```
+
+```elixir
+# Lean: with keeps the happy path flat
+def create_order(params) do
+  with {:ok, validated} <- validate(params),
+       {:ok, user}      <- fetch_user(validated.user_id),
+       {:ok, charge}    <- charge(user, validated.amount) do
+    {:ok, charge}
+  end
+end
+```
 
 ## Anti-Patterns
 
@@ -421,5 +512,5 @@ Use generics and advanced types when they remove real duplication or enforce a r
 | Abstraction before the second use case | Abstractions built from one example embed the wrong shape; the second case always breaks the interface | Duplicate once; extract when the second case reveals the true shared contract |
 | Adding Redis/Kafka/vector DB speculatively | Each store adds an operational dependency, a consistency boundary, and an onboarding burden | Add a data store only when Postgres (or equivalent) demonstrably cannot handle the access pattern |
 | Clever one-liners over readable code | Saves the writer a minute; costs every future reader five minutes per encounter | Write the obvious four lines; compress only when the abstraction is universally understood |
-| Calling missing features "focus" | Underbuilding critical paths (auth, error handling, data integrity) is technical debt, not minimalism | Distinguish the core loop — which must be robust — from peripheral features that can wait |
+| Calling missing features "focus" | Underbuilding critical paths (auth, error handling, data integrity) is technical debt, not minimalism | Distinguish the core loop - which must be robust - from peripheral features that can wait |
 | Premature configurability | Every option doubles the test matrix and the mental model required to use the system | Hard-code sensible defaults; promote to config only when a real user needs to change it |
